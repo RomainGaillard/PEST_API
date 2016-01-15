@@ -72,9 +72,9 @@ module.exports = {
         var running = req.param("running");
         var state = req.param("state");
         var company = req.param("id_company");
-        var currentUser = req.param("current_user");
+        var newUser = req.param("current_user");
         Truck.findOne({id:req.param("id_truck")}).exec(function(err,truck){
-            if(err) return res.serverError({error:"erreur serveur"})
+            if(err) return res.serverError({error:"erreur serveur"});
 
             if(truck){
                 if(location && !ToolsService.isEmpty(location)){
@@ -92,13 +92,17 @@ module.exports = {
                 if(company && !ToolsService.isEmpty(company)){
                     truck.company = company
                 }
-                if(currentUser && !ToolsService.isEmpty(currentUser)){
-                    truck.currentUser = currentUser
+                if(newUser && !ToolsService.isEmpty(newUser)){
+                    if(truck.currentUser === newUser){
+                        User.update(truck.currentUser, {truck:null}).exec(function (req, user) {});
+                        User.update(newUser, {truck:truck.id}).exec(function (req, user) {});
+                        truck.currentUser = newUser
+                    }
                 }
 
                 truck.save(function(err){
-                    if(err) return res.serverError({error:"impossible de sauvegarder en base"})
-                    Truck.publishUpdate(truck.id,{truck:truck})
+                    if(err) return res.serverError({error:"impossible de sauvegarder en base"});
+                    Truck.publishUpdate(truck.id,{truck:truck});
                     return res.ok({message:"truck bien update"})
                 })
             }else return res.badRequest({error:"truck not found"})
