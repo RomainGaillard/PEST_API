@@ -20,22 +20,24 @@ module.exports = {
             // If user created successfuly we return user and token as response
             if (user) {
                 // NOTE: payload is { id: user.id}
-                Truck.update(user.truck, {currentUser:user.id}).exec(function (err,truck) {});
+                //Truck.update(user.truck, {currentUser:user.id}).exec(function (err,truck) {});
 
-/*                Truck.findOne({id:user.truck}).exec(function(err,truck){
-                    if(err) return res.serverError({error: "impossible de retrouver le truck pour faire l'association"});
+                if(req.parameter("id_truck")){
+                    Truck.findOne({id:user.truck}).exec(function(err,truck){
+                        if(err) return res.serverError({error: "impossible de retrouver le truck pour faire l'association"});
 
-                    if(truck){
+                        if(truck){
 
-                        /!*truck.currentUser = user.id
+                            truck.currentUser = user.id
 
-                        truck.save(function(err){
-                            if(err) return res.serverError({error: "impossible de faire l'association avec le truck"});
+                            truck.save(function(err){
+                                if(err) return res.serverError({error: "impossible de faire l'association avec le truck"});
 
-                            return res.json(201, {user:user})
-                        })*!/
-                    }else return res.notFound({error:"le truck à cet id n'existe pas"})
-                })*/
+                                res.json(201, {user: user, token: jwToken.issue({id: user.id})});
+                            })
+                        }else return res.notFound({error:"le truck à cet id n'existe pas"})
+                    })
+                }
                 res.json(200, {user: user, token: jwToken.issue({id: user.id})});
             }else return res.json(500, {error: "impossible de créer le camion"})
         });

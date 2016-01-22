@@ -11,13 +11,16 @@ module.exports = {
             if(err) return res.serverError({error:"impossible de créer le camion"});
 
             if(truck){
-                if(truck.currentUser && !ToolsUtils.isEmpty(truck.currentUser)){
-                    User.update(truck.currentUser, {truck:truck.id}).exec(function(err,user){});
-/*                    User.findOne({id:truck.currentUser}.exec(function(err,user){
+                console.log(truck.currentUser)
+                if(truck.currentUser){
+                    console.log("test1")
+                    //User.update(truck.currentUser, {truck:truck.id}).exec(function(err,user){console.log("test")});
+                    User.findOne(truck.currentUser).exec(function(err,user){
+                        console.log("test2")
                         if(err) return res.serverError({error: "impossible de retrouver le user pour faire l'association"});
 
                         if(user){
-                            user.truck = truck.currentUser;
+                            user.truck = truck.id;
 
                             user.save(function(err){
                                 if(err) return res.serverError({error: "impossible de faire l'association avec le user"});
@@ -25,10 +28,8 @@ module.exports = {
                                 return res.json(201, {truck: truck});
                             })
                         }else return res.notFound({error: "user non existant pour l'association"})
-                    }))*/
-                }
-
-                return res.json(201, {truck: truck})
+                    })
+                }else return res.json(201, {truck: truck})
             }else return res.json(500, {error: "impossible de créer le camion"})
         })
     },
@@ -50,7 +51,7 @@ module.exports = {
         console.log(req.user.email)
         if (req.user.right === "Administrateur"){
             Truck.find({}).exec(function(err,trucks){
-                if(err) return res.serverError({error:'impossible de récupérer les camions'})
+                if(err) return res.serverError({error:'impossible de rÃ©cupÃ©rer les camions'})
 
                 if(trucks){
                     if(req.isSocket){
