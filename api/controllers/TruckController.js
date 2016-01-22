@@ -11,12 +11,9 @@ module.exports = {
             if(err) return res.serverError({error:"impossible de créer le camion"});
 
             if(truck){
-                console.log(truck.currentUser)
                 if(truck.currentUser){
-                    console.log("test1")
                     //User.update(truck.currentUser, {truck:truck.id}).exec(function(err,user){console.log("test")});
                     User.findOne(truck.currentUser).exec(function(err,user){
-                        console.log("test2")
                         if(err) return res.serverError({error: "impossible de retrouver le user pour faire l'association"});
 
                         if(user){
@@ -48,7 +45,6 @@ module.exports = {
     },
 
     trucks:function(req,res){
-        console.log(req.user.email)
         if (req.user.right === "Administrateur"){
             Truck.find({}).exec(function(err,trucks){
                 if(err) return res.serverError({error:'impossible de rÃ©cupÃ©rer les camions'})
@@ -75,8 +71,15 @@ module.exports = {
         var state = req.param("state");
         var company = req.param("id_company");
         var newUser = req.param("current_user");
-        Truck.findOne({id:req.param("id_truck")}).exec(function(err,truck){
+
+        console.log(req.body)
+        console.log(req.params.all())
+        Truck.findOne({id:req.param("id")}).exec(function(err,truck){
+        //Truck.update(req.param("id"),req.body).exec(function(err,truck){
+            console.log("test")
             if(err) return res.serverError({error:"erreur serveur"});
+
+            console.log("test1")
 
             if(truck){
                 if(location && !ToolsService.isEmpty(location)){
@@ -96,15 +99,21 @@ module.exports = {
                 }
                 if(newUser && !ToolsService.isEmpty(newUser)){
                     if(truck.currentUser === newUser){
+                        console.log("modification du user lié à ce truck");
                         User.update(truck.currentUser, {truck:null}).exec(function (req, user) {});
                         User.update(newUser, {truck:truck.id}).exec(function (req, user) {});
                         truck.currentUser = newUser
                     }
                 }
 
+
+                console.log("test2")
                 truck.save(function(err){
                     if(err) return res.serverError({error:"impossible de sauvegarder en base"});
                     Truck.publishUpdate(truck.id,{truck:truck});
+
+                    console.log("test3")
+
                     return res.ok({message:"truck bien update"})
                 })
             }else return res.badRequest({error:"truck not found"})
