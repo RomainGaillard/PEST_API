@@ -38,8 +38,8 @@ module.exports = function (req, res, next) {
         User.findOne({id:req.token.id}).exec(function(err,user){
             if(err) return res.serverError
             req.user = user
-            console.log("is_authorized")
-            console.log(req.user)
+            //console.log("isAuthorized")
+            console.log(req.user.email);
             next();
         })
     });
