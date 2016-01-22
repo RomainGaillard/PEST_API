@@ -42,16 +42,18 @@ module.exports = {
     },
 
     // todo relation one to one si on change l'id du truck il faut que l'ancien truck et le nouveau le sache
+    //todo débug pas de retour
 
     update: function (req, res) {
         var new_id_truck = req.param("id_truck");
         var old_id_truck = req.user.truck;
 
+        console.log(req.user);
         User.update(req.body).exec(function (err, user) {
             if(err) return res.serverError({error:"impossible d'update"});
 
             if(user){
-                if(new_id_truck === old_id_truck){
+                if(new_id_truck == null || new_id_truck === old_id_truck){
                     Truck.update(old_id_truck, {currentUser:null}).exec(function (err, truck) {});
                     Truck.update(new_id_truck, {currentUser:user.id}).exec(function (err, truck) {})
                 }

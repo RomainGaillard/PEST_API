@@ -47,7 +47,8 @@ module.exports = {
     },
 
     trucks:function(req,res){
-        if (req.user.right === "Admin"){
+        console.log(req.user.email)
+        if (req.user.right === "Administrateur"){
             Truck.find({}).exec(function(err,trucks){
                 if(err) return res.serverError({error:'impossible de récupérer les camions'})
 
