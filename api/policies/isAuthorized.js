@@ -40,7 +40,7 @@ module.exports = function (req, res, next) {
             req.user = user
             //console.log("isAuthorized")
             console.log(req.user.email);
+            next();
         })
-        next();
     });
 };
