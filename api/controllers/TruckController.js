@@ -8,7 +8,7 @@
 module.exports = {
     create:function(req,res){
         Truck.create(req.body).exec(function(err,truck){
-            if(err) return res.serverError({error:"impossible de créer le camion"});
+            if(err) return res.serverError({error:"impossible de crÃ©er le camion"});
 
             if(truck){
                 if(truck.currentUser && !ToolsUtils.isEmpty(truck.currentUser)){
@@ -29,7 +29,7 @@ module.exports = {
                 }
 
                 return res.json(201, {truck: truck})
-            }else return res.json(500, {error: "impossible de créer le camion"})
+            }else return res.json(500, {error: "impossible de crÃ©er le camion"})
         })
     },
 
@@ -38,7 +38,7 @@ module.exports = {
         if(!truck) return res.badRequest({error:'wrong path'});
         Panne.find({truck:req.param("id_truck")}).exec(function(err,pannes){
             if(pannes){
-                sails.log.debug("=> GetPannesByTruck: Succès");
+                sails.log.debug("=> GetPannesByTruck: SuccÃ¨s");
                 return res.status(200).json({pannes:pannes})
             }
             sails.log.debug("=> GetPannesByTruck: Erreur");
@@ -50,7 +50,7 @@ module.exports = {
         console.log(req.user.email)
         if (req.user.right === "Administrateur"){
             Truck.find({}).exec(function(err,trucks){
-                if(err) return res.serverError({error:'impossible de récupérer les camions'})
+                if(err) return res.serverError({error:'impossible de rÃ©cupÃ©rer les camions'})
 
                 if(trucks){
                     if(req.isSocket){
