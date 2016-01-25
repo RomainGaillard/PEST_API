@@ -84,7 +84,7 @@ module.exports = {
                 if(name && !ToolsService.isEmpty(name)){
                     truck.name = name
                 }
-                if(running && ToolsService.isBoolean(running)){
+                if(ToolsService.isBoolean(running)){
                     truck.running = ToolsService.getBoolean(running)
                 }
                 if(state && !ToolsService.isEmpty(state)){
