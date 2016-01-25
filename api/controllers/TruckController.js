@@ -46,7 +46,7 @@ module.exports = {
 
     trucks:function(req,res){
         if (req.user.right === "Administrateur"){
-            Truck.find({}).exec(function(err,trucks){
+            Truck.find({}).populate("pannes").exec(function(err,trucks){
                 if(err) return res.serverError({error:'impossible de rÃ©cupÃ©rer les camions'})
 
                 if(trucks){
