@@ -45,21 +45,35 @@ module.exports = {
     },
 
     trucks:function(req,res){
-        if (req.user.right === "Administrateur"){
-            Truck.find({}).populate("pannes").exec(function(err,trucks){
-                if(err) return res.serverError({error:'impossible de rÃ©cupÃ©rer les camions'})
+        if (req.user.right === "Administrateur") {
+            Truck.find({}).populate("pannes").exec(function (err, trucks) {
+                if (err) return res.serverError({error: 'impossible de récupérer les camions'})
 
-                if(trucks){
-                    if(req.isSocket){
-                        for(var i=0;i<group.length;i++){
+                if (trucks) {
+                    if (req.isSocket) {
+                        for (var i = 0; i < group.length; i++) {
                             Truck.subscribe(req, trucks[i].id)
                         }
 
                         return res.status(200).json(trucks)
-                    }else return res.ok(trucks)
+                    } else return res.ok(trucks)
                 }
             })
-        }else return res.status(403).json({error: "must be administrator"})
+        }else if(req.user.right === "Réparateur") {
+            Truck.find({company:req.user.company}).populate("pannes").exec(function (err, trucks) {
+                if (err) return res.serverError({error: 'impossible de récupérer les camions'})
+
+                if (trucks) {
+                    if (req.isSocket) {
+                        for (var i = 0; i < group.length; i++) {
+                            Truck.subscribe(req, trucks[i].id)
+                        }
+
+                        return res.status(200).json(trucks)
+                    } else return res.ok(trucks)
+                }
+            })
+        }else return res.status(403).json({error: "You can't get the trucks dude"})
     },
 
     // todo relation one to one si on change l'id du currentUser il faut que l'ancien user et le nouveau le sache

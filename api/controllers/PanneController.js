@@ -41,6 +41,7 @@ module.exports = {
     },
 
 
+    //todo quand on passe le state à terminé est ce que l'on enleve de camion la panne ou pas ?
     update:function(req,res){
         var comment = req.param("comment");
         var priority = req.param("priority");
@@ -55,7 +56,40 @@ module.exports = {
                     panne.priority = priority
                 }
                 if(state && !ToolsService.isEmpty){
-                    panne.state = state
+                    if(panne.state != state){
+                        if(state == "Terminée"){
+                            Truck.findOne({id:panne.truck}).populate("pannes").exec(function (err, truck) {
+                                if(err) return res.serverError
+                                if (truck){
+                                    //var index = truck.pannes.indexOf(req.param("id"))
+                                    //if(index > -1)
+                                    //    truck.panne.splice(index,1)
+                                    if(truck.pannes.length == 1){
+                                        truck.state = "Ok"
+                                    }else {
+                                        for (i = 0; i < truck.pannes.length; i++){
+                                            if(truck.pannes[i].state == "Terminée" ){
+                                                truck.state = "Ok"
+                                            }else {
+                                                truck.state = "En Panne"
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    truck.save(function (err) {
+                                        if(err){
+                                            return res.serverError
+                                        }
+                                        Truck.publishUpdate(truck.id,truck)
+                                        return res.ok(truck)
+                                    })
+                                }else {
+                                    return res.notFound.json({err:"truck correspondant à l'id de la panne introuvable"})
+                                }
+                            })
+                        }
+                        panne.state = state
+                    }
                 }
                 if(typePanne && !ToolsService.isEmpty){
                     panne.typePanne = typePanne
@@ -77,11 +111,9 @@ module.exports = {
     destroy:function(req,res){
         Panne.findOne({id:req.param("id")}).exec(function (err, panne) {
             if (err) return res.serverError
-            console.log("panne -> " + panne.truck)
             if(panne){
                 Truck.findOne({id:panne.truck}).exec(function (err, truck) {
                     if(err) return res.serverError
-                    console.log("truck -> " + truck)
                     if (truck){
                         var index = truck.pannes.indexOf(req.param("id"))
                         if(index > -1)
@@ -99,7 +131,13 @@ module.exports = {
                                 return res.ok(truck)
                             })
                         })
-                    }else return res.notFound.json({err:"truck correspondant à l'ide de la panne introuvable"})
+                    }else {
+                        Panne.destroy({id:req.param("id")}).exec(function (err) {
+                            if(err) return res.serverError
+                            return res.ok()
+                        })
+                        //return res.notFound.json({err:"truck correspondant à l'id de la panne introuvable"})
+                    }
                 })
             }else return res.notFound.json({err:"panne à cette id inexistante"})
         })
