@@ -12,20 +12,32 @@ module.exports = {
 
 //todo régler le probleme quand on fait notre propre create d'éléments invalides
 
-/*    create: function(req,res){
+    create: function(req,res){
         //panneModel.comment = req.param('comment');
         Panne.create(req.body).exec(function(err,panne){
             if(panne){
                 sails.log.debug("=> Creation PANNE: Succès");
                 console.log(panne);
-                if(req.isSocket)
-                    Panne.subscribe(req,panne.id);
+                Panne.subscribe(req,panne.id);
+                Truck.findOne(panne.truck).exec(function (err, truck) {
+                    if (err) return res.serverError
+
+                    if (truck){
+                        truck.pannes.push(panne.id)
+                        truck.state = "En Panne"
+                        truck.save(function(err){
+                            if(err) return res.serverError
+                            truck.subscribe(req,truck.id)
+                            return res.ok
+                        })
+                    }
+                })
                 return res.status(201).json({created:panne})
             }
             sails.log.debug("=> Creation PANNE: Erreur");
             return res.status(400).json({err:"create Panne: Erreur. "+err})
         })
-    },*/
+    },
 
 
     update:function(req,res){
@@ -61,6 +73,16 @@ module.exports = {
             }else return res.notFound({error:"panne not found"})
         })
     },
+
+    destroy:function(req,res){
+        Panne.findOne({id:req.param("id")}).exec(function (err, truck) {
+            if (err) return res.serverError
+
+            if(truck){
+                truck.pannes
+            }
+        })
+    }
 
 };
 

@@ -27,7 +27,7 @@ module.exports = {
                         if(err) return res.serverError({error: "impossible de retrouver le truck pour faire l'association"});
 
                         if(truck){
-
+                            console.log("test")
                             truck.currentUser = user.id
 
                             truck.save(function(err){

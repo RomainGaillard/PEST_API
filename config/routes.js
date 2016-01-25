@@ -46,6 +46,7 @@ module.exports.routes = {
   ***************************************************************************/
   //'post /panne':"PanneController.create",
   'put /panne/:id_panne':"PanneController.update",
+  'post /panne':"PanneController.create",
 
   /***************************************************************************
    * Les routes du model TRUCK

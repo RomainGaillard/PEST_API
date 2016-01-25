@@ -75,11 +75,7 @@ module.exports = {
         console.log(req.body)
         console.log(req.params.all())
         Truck.findOne({id:req.param("id")}).exec(function(err,truck){
-        //Truck.update(req.param("id"),req.body).exec(function(err,truck){
-            console.log("test")
             if(err) return res.serverError({error:"erreur serveur"});
-
-            console.log("test1")
 
             if(truck){
                 if(location && !ToolsService.isEmpty(location)){
@@ -105,14 +101,9 @@ module.exports = {
                         truck.currentUser = newUser
                     }
                 }
-
-
-                console.log("test2")
                 truck.save(function(err){
                     if(err) return res.serverError({error:"impossible de sauvegarder en base"});
                     Truck.publishUpdate(truck.id,{truck:truck});
-
-                    console.log("test3")
 
                     return res.ok({message:"truck bien update"})
                 })
