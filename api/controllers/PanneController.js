@@ -10,7 +10,6 @@ var panneModel = require('../models/Panne.js');
 
 module.exports = {
 
-//todo régler le probleme quand on fait notre propre create d'éléments invalides
 
     create: function(req,res){
         //panneModel.comment = req.param('comment');

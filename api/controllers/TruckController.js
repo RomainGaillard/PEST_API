@@ -44,6 +44,23 @@ module.exports = {
         })
     },
 
+    getTruckById:function(req,res){
+        var id_truck = req.param("id");
+        if(!id_truck) return res.badRequest
+        Truck.findOne({id:id_truck}).populate("pannes").exec(function (err, truck) {
+            if(err) return res.serverError
+
+            if (!truck) return res.notFound
+
+            Truck.subscribe(req, truck.id)
+            Panne.subscribe(req, truck.pannes.id)
+            
+            return res.ok(truck)
+
+        })
+    },
+    //todo faire le cas du repairman qui peut récupérer les truck qui sont en pannes
+
     trucks:function(req,res){
         if (req.user.right === "Administrateur") {
             Truck.find({}).populate("pannes").exec(function (err, trucks) {
