@@ -70,7 +70,7 @@ module.exports = {
                 if (req.isSocket) {
                     for (var i = 0; i < trucks.length; i++) {
                         Truck.subscribe(req, trucks[i].id)
-                        for( j = 0; j < trucks[i].pannes.length; i++)
+                        for( j = 0; j < trucks[i].pannes.length; j++)
                             Panne.subscribe(req, trucks[i].pannes[j].id)
                     }
 
@@ -85,7 +85,7 @@ module.exports = {
                 if (req.isSocket) {
                     for (var i = 0; i < trucks.length; i++) {
                         Truck.subscribe(req, trucks[i].id)
-                        for( j = 0; j < trucks[i].pannes.length; i++)
+                        for( j = 0; j < trucks[i].pannes.length; j++)
                             Panne.subscribe(req, trucks[i].pannes[j].id)
                     }
 
@@ -101,7 +101,7 @@ module.exports = {
                 if(req.isSocket) {
                     for ( i = 0; i < trucks.length; i++ ){
                         Truck.subscribe(req,trucks[i].id)
-                        for( j = 0; j < trucks[i].pannes.length; i++)
+                        for( j = 0; j < trucks[i].pannes.length; j++)
                             Panne.subscribe(req, trucks[i].pannes[j].id)
                     }
 
