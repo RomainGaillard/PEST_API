@@ -17,7 +17,7 @@ module.exports = {
                         console.log(trucks);
                         for(var i=0;i<trucks.length;i++){
                             Truck.subscribe(req, trucks[i].id)
-                            for( j = 0; j<trucks[i].pannes[j].length; j++){
+                            for( j = 0; j<trucks[i].pannes.length; j++){
                                 Panne.subscribe(req, trucks[i].pannes[j].id)
                             }
                         }
