@@ -24,7 +24,25 @@ module.exports = {
                     sails.log.debug("=> getTrucksByCompany: Erreur");
                     return res.status(400).json({err:"get Company: Erreur"})
                 })
-        }else return res.forbidden({err:"you are not gestionnaire of your company"})
+        }else return res.forbidden({err:"tu n'es pas gestionnaire"})
+    },
+
+    getUsersByCompany:function(req,res){
+        if(req.user.right === "Gestionnaire") {
+            User.find({company: req.user.company}).populate("company").populate("truck").exec(function (err, users) {
+                if (err) return res.serverError
+                if (!users) return res.ok("pas d'utilisateur trouvé pour la company de ce gestionnaire")
+
+                if (req.isSocket) {
+                    for (i = 0; i < users.length; i++) {
+                        User.subscribe(req, users[i].id)
+                    }
+
+                    return res.ok(users)
+                }
+                return res.ok(users)
+            })
+        }else return res.forbidden({err:"tu n'es pas gestionnaire"})
     }
 };
 

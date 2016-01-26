@@ -47,6 +47,37 @@ module.exports = {
     // todo relation one to one si on change l'id du truck il faut que l'ancien truck et le nouveau le sache
     //todo débug pas de retour
 
+    getAllUsers:function(req, res) {
+        if(req.user.right === "Administrateur"){
+            User.find({}).populate("company").populate("truck").exec(function (err, users) {
+                if(err) return res.serverError
+                if(!users) return res.ok("pas d'utilisateur trouvé")
+
+                if(req.isSocket){
+                    for(i = 0; i< users.length; i++){
+                        User.subscribe(req, users[i].id)
+                    }
+
+                    return res.ok(users)
+                }
+                return res.ok(users)
+            })
+        }else if(req.user.right === "Gestionnaire"){
+            User.find({company: req.user.company}).populate("company").populate("truck").exec(function (err, users) {
+                if(err) return res.serverError
+                if(!users) return res.ok("pas d'utilisateur trouvé pour la company de ce gestionnaire")
+
+                if(req.isSocket){
+                    for(i = 0; i< users.length; i++){
+                        User.subscribe(req, users[i].id)
+                    }
+
+                    return res.ok(users)
+                }
+                return res.ok(users)
+            })
+        }else return res.forbidden("You have no right to get the users")
+    },
     update: function (req, res) {
         var new_id_truck = req.param("id_truck");
         var old_id_truck = req.user.truck;

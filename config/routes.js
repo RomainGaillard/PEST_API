@@ -61,6 +61,13 @@ module.exports.routes = {
    ***************************************************************************/
 
   'get /company/trucks':"CompanyController.getTrucksByCompany",
+  'get /company/users':"CompanyController.getUsersByCompany",
+
+  /***************************************************************************
+   * Les routes du model USER
+   ***************************************************************************/
+
+  'get /users':"UserController.getAllUsers"
 
 /**  GET /boat -> BoatController.find                                        *
   *  GET /boat/:id -> BoatController.findOne                                 *
