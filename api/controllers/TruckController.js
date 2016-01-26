@@ -60,36 +60,54 @@ module.exports = {
 
         })
     },
-    //todo faire le cas du repairman qui peut récupérer les truck qui sont en pannes
 
     trucks:function(req,res){
         if (req.user.right === "Administrateur") {
             Truck.find({}).populate("pannes").exec(function (err, trucks) {
                 if (err) return res.serverError({error: 'impossible de récupérer les camions'})
 
-                if (trucks) {
-                    if (req.isSocket) {
-                        for (var i = 0; i < group.length; i++) {
-                            Truck.subscribe(req, trucks[i].id)
-                        }
+                if (!trucks) return res.ok("il n'y a pas de camion")
+                if (req.isSocket) {
+                    for (var i = 0; i < trucks.length; i++) {
+                        Truck.subscribe(req, trucks[i].id)
+                        for( j = 0; j < trucks[i].pannes.length; i++)
+                            Panne.subscribe(req, trucks[i].pannes[j].id)
+                    }
 
-                        return res.status(200).json(trucks)
-                    } else return res.ok(trucks)
-                }
+                    return res.status(200).json(trucks)
+                } else return res.ok(trucks)
             })
-        }else if(req.user.right === "Réparateur") {
-            Truck.find({company:req.user.company}).populate("pannes").exec(function (err, trucks) {
+        }else if(req.user.right === "Gestionnaire") {
+            Truck.find({company: req.user.company}).populate("pannes").exec(function (err, trucks) {
                 if (err) return res.serverError({error: 'impossible de récupérer les camions'})
 
-                if (trucks) {
-                    if (req.isSocket) {
-                        for (var i = 0; i < group.length; i++) {
-                            Truck.subscribe(req, trucks[i].id)
-                        }
+                if (!trucks) return res.ok("Cette entreprise n'a pas de camion")
+                if (req.isSocket) {
+                    for (var i = 0; i < trucks.length; i++) {
+                        Truck.subscribe(req, trucks[i].id)
+                        for( j = 0; j < trucks[i].pannes.length; i++)
+                            Panne.subscribe(req, trucks[i].pannes[j].id)
+                    }
 
-                        return res.status(200).json(trucks)
-                    } else return res.ok(trucks)
-                }
+                    return res.status(200).json(trucks)
+                } else return res.ok(trucks)
+
+            })
+        }else if(req.user.right === "Réparateur"){
+            Truck.find({state:"En Panne"}).populate("pannes").exec(function (err, trucks) {
+                if(err) return res.serverError
+                if(!trucks) return res.ok("Aucun camion n'est en panne tout va bien")
+
+                if(req.isSocket) {
+                    for ( i = 0; i < trucks.length; i++ ){
+                        Truck.subscribe(req,trucks[i].id)
+                        for( j = 0; j < trucks[i].pannes.length; i++)
+                            Panne.subscribe(req, trucks[i].pannes[j].id)
+                    }
+
+                    return res.ok(trucks)
+                }else return res.ok(trucks)
+
             })
         }else return res.status(403).json({error: "You can't get the trucks dude"})
     },

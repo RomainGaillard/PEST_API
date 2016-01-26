@@ -5,6 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
+//todo faire un getAllUser ou on verifie si le mec est admin ou gestionnaire pour savoir ce qu'il peut récupérer
 module.exports = {
     /**
      * `UserController.create()`
