@@ -15,6 +15,7 @@ module.exports = {
     create: function(req,res){
         //panneModel.comment = req.param('comment');
         Panne.create(req.body).exec(function(err,panne){
+            sails.log.debug("PANNE CREATE CALL" + err);
             if(err) return res.serverError
             if(panne){
                 sails.log.debug("=> Creation PANNE: Succès");
@@ -29,6 +30,7 @@ module.exports = {
                         truck.save(function(err){
                             if(err) return res.serverError
                             Truck.subscribe(req,truck.id)
+                            sails.log.debug("PANNE CREATE OK");
                             return res.status(201).json({created:truck})
                         })
                     }else res.notFound
@@ -80,7 +82,7 @@ module.exports = {
                                         if(err){
                                             return res.serverError
                                         }
-                                        Truck.publishUpdate(truck.id,truck)
+                                        Truck.publishUpdate(truck.id,{truck:truck})
                                         return res.ok(truck)
                                     })
                                 }else {
@@ -101,7 +103,7 @@ module.exports = {
                         return res.status(400).json({err: "edit Panne: Erreur"})
                     }
                     sails.log.debug("=> Edit PANNE: Succès");
-                    Panne.publishUpdate(panne.id, panne);
+                    Panne.publishUpdate(panne.id,{panne:panne});
                     return res.status(200).json({updated:panne});
                 })
             }else return res.notFound({error:"panne not found"})
@@ -117,8 +119,8 @@ module.exports = {
                     if (truck){
                         var index = truck.pannes.indexOf(req.param("id"))
                         if(index > -1)
-                            truck.panne.splice(index,1)
-                        if(truck.panne.length == 0){
+                            truck.pannes.splice(index,1)
+                        if(truck.pannes.length == 0){
                             truck.state = "Ok"
                         }
                         truck.save(function (err) {
@@ -127,7 +129,8 @@ module.exports = {
                             }
                             Panne.destroy({id:req.param("id")}).exec(function (err) {
                                 if(err) return res.serverError
-                                Truck.publishUpdate(truck.id,truck)
+                                Panne.publishDestroy(req.param("id"));
+                                Truck.publishUpdate(truck.id,{truck:truck})
                                 return res.ok(truck)
                             })
                         })
@@ -139,7 +142,7 @@ module.exports = {
                         //return res.notFound.json({err:"truck correspondant à l'id de la panne introuvable"})
                     }
                 })
-            }else return res.notFound.json({err:"panne à cette id inexistante"})
+            }else return res.status(404).json({err:"panne à cette id inexistante"})
         })
     }
 
