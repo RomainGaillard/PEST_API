@@ -53,8 +53,9 @@ module.exports = {
             if (!truck) return res.notFound
 
             Truck.subscribe(req, truck.id)
-            Panne.subscribe(req, truck.pannes.id)
-            
+            for( i = 0; i < truck.pannes.length; i++)
+                Panne.subscribe(req, truck.pannes[i].id)
+
             return res.ok(truck)
 
         })
