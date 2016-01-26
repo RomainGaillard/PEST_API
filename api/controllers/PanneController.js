@@ -28,7 +28,7 @@ module.exports = {
                         truck.state = "En Panne"
                         truck.save(function(err){
                             if(err) return res.serverError
-                            Truck.subscribe(req,truck.id)
+                            Truck.publishUpdate(truck.id,{truck:truck,panne:panne})
                             sails.log.debug("PANNE CREATE OK");
                             return res.status(201).json({created:truck})
                         })
