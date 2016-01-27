@@ -48,8 +48,8 @@ module.exports = {
         var priority = req.param("priority");
         var state = req.param("state");
         var typePanne = req.param("type_panne");
-        var repairman = req.param("repairman");
-
+        var repairman = req.param("idRepairman");
+        sails.log.debug(repairman);
         Panne.findOne({id:req.param("id_panne")}).exec(function(err,panne) {
             if (panne) {
                 if(repairman && !ToolsService.isEmpty(repairman)){
