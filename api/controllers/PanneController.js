@@ -110,6 +110,8 @@ module.exports = {
                                     return res.notFound.json({err:"truck correspondant à l'id de la panne introuvable"})
                                 }
                             })
+                        }else if(state == "Déclarée"){
+                            panne.idRepairman = null
                         }
                         panne.state = state
                     }
