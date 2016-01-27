@@ -10,10 +10,15 @@ module.exports = {
      * `UserController.create()`
      */
     create: function (req, res) {
+        var body = req.body
+        if(body.truck === "null")
+            body.truck = null
+        if(body.company === "null")
+            body.company = null
         if (req.body.password !== req.body.confirmPassword) {
             return res.json(401, {err: 'Password doesn\'t match, What a shame!'});
         }
-        User.create(req.body).exec(function (err, user) {
+        User.create(body).exec(function (err, user) {
             if (err) {
                 return res.json(err.status, {err: err});
             }
@@ -23,7 +28,7 @@ module.exports = {
                 //Truck.update(user.truck, {currentUser:user.id}).exec(function (err,truck) {});
 
                 var is_in = false;
-                if(req.param("id_truck")){
+                if(body.truck){
                     is_in = true;
                     Truck.findOne({id:user.truck}).exec(function(err,truck){
                         if(err) return res.serverError({error: "impossible de retrouver le truck pour faire l'association"});
@@ -46,7 +51,7 @@ module.exports = {
                             return res.notFound({error:"le truck à cet id n'existe pas"})
                         }
                     })
-                }if(req.param("id_company")){
+                }if(body.company){
                     is_in = true
                     Company.findOne({id:user.company}).exec(function (err, company) {
                         if(err) return res.serverError({error:err})
@@ -113,7 +118,13 @@ module.exports = {
 
     update: function (req, res) {
         if (req.user.right === "Administrateur" || req.user.right === "Gestionnaire") {
-            var new_id_truck = req.param("id_truck");
+            var body = req.body
+            if(body.truck === "null")
+                body.truck = null
+            if(body.company === "null")
+                body.company = null
+
+            var new_id_truck = body.truck;
             var old_id_truck = req.user.truck;
 
             if (new_id_truck && new_id_truck != old_id_truck) {
@@ -124,7 +135,8 @@ module.exports = {
                     if (truck.currentUser)
                         return res.badRequest({err: "ce truck a déjà un user"})
                     else {
-                        User.update({id: req.param("id")}, req.body).exec(function (err, user) {
+
+                        User.update({id: req.param("id")}, body).exec(function (err, user) {
                             if (err) return res.serverError({error: "impossible d'update"});
 
                             if (!user) return res.notFound({err: "no user found"})
@@ -152,7 +164,7 @@ module.exports = {
                     }
                 })
             } else {
-                User.update({id: req.param("id")}, req.body).exec(function (err, user) {
+                User.update({id: req.param("id")}, body).exec(function (err, user) {
                     if (err) return res.serverError({error: "impossible d'update"});
 
                     if (!user) return res.notFound({err: "no user found"})

@@ -7,7 +7,12 @@
 
 module.exports = {
     create:function(req,res){
-        Truck.create(req.body).exec(function(err,truck){
+        var body = req.body
+        if(body.currentUser === "null")
+            body.currentUser = null
+        if(body.company === "null")
+            body.company = null
+        Truck.create(body).exec(function(err,truck){
             if(err) return res.serverError({error:"impossible de créer le camion"});
 
             if(truck){
@@ -122,8 +127,10 @@ module.exports = {
         var company = req.param("id_company");
         var newUser = req.param("current_user");
 
-        console.log(req.body)
-        console.log(req.params.all())
+        if(newUser === "null")
+            newUser = null
+        if(company === "null")
+            company = null
         Truck.findOne({id:req.param("id")}).exec(function(err,truck){
             if(err) return res.serverError({error:"erreur serveur"});
 
