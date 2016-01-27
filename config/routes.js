@@ -67,7 +67,8 @@ module.exports.routes = {
    * Les routes du model USER
    ***************************************************************************/
 
-  'get /users':"UserController.getAllUsers"
+  'get /users':"UserController.getAllUsers",
+  'put /user/:id':"UserController.update"
 
 /**  GET /boat -> BoatController.find                                        *
   *  GET /boat/:id -> BoatController.findOne                                 *
