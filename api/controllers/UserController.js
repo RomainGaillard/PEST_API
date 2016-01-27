@@ -22,7 +22,7 @@ module.exports = {
                 // NOTE: payload is { id: user.id}
                 //Truck.update(user.truck, {currentUser:user.id}).exec(function (err,truck) {});
 
-                if(req.parameter("id_truck")){
+                if(req.param("id_truck")){
                     Truck.findOne({id:user.truck}).exec(function(err,truck){
                         if(err) return res.serverError({error: "impossible de retrouver le truck pour faire l'association"});
 
