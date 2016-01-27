@@ -22,7 +22,9 @@ module.exports = {
                 // NOTE: payload is { id: user.id}
                 //Truck.update(user.truck, {currentUser:user.id}).exec(function (err,truck) {});
 
+                var is_in = false;
                 if(req.param("id_truck")){
+                    is_in = true;
                     Truck.findOne({id:user.truck}).exec(function(err,truck){
                         if(err) return res.serverError({error: "impossible de retrouver le truck pour faire l'association"});
 
@@ -33,12 +35,42 @@ module.exports = {
                             truck.save(function(err){
                                 if(err) return res.serverError({error: "impossible de faire l'association avec le truck"});
 
-                                res.json(201, {user: user, token: jwToken.issue({id: user.id})});
+                                res.json(201, {user: user});
                             })
-                        }else return res.notFound({error:"le truck à cet id n'existe pas"})
+                        }else {
+                            user.truck = null
+
+                            user.save(function (err) {
+                                if(err) return res.serverError({error:err})
+                            })
+                            return res.notFound({error:"le truck à cet id n'existe pas"})
+                        }
+                    })
+                }if(req.param("id_company")){
+                    is_in = true
+                    Company.findOne({id:user.company}).exec(function (err, company) {
+                        if(err) return res.serverError({error:err})
+                        if(!company) {
+                            user.company = null
+
+                            user.save(function(err){
+                                if(err) return res.serverError({error:err})
+
+                            })
+                            return res.notFound({error:"cette entreprise n'existe pas"})
+                        }else{
+                            company.users.push(user.id)
+
+                            company.save(function (err) {
+                                if(err) return res.serverError({error:err})
+
+                                res.status(201).json({user: user})
+                            })
+                        }
+
                     })
                 }
-                res.json(200, {user: user, token: jwToken.issue({id: user.id})});
+                if(!is_in) res.json(200, {user: user});
             }else return res.json(500, {error: "impossible de créer le camion"})
         });
     },
