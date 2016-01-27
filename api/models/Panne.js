@@ -22,9 +22,8 @@ module.exports = {
       type:'string'
     },
     idRepairman: {
-      collection: 'user',
-      via:'pannes',
-      columnName: 'id_repairmen'
+      model: 'User',
+      columnName: 'id_repairman'
     },
     truck:{
       model:'Truck',

@@ -29,7 +29,6 @@ module.exports = {
     pannes:{
       collection:'panne',
       via:'idRepairman',
-      columnName: 'id_pannes'
     },
     lastname: {
       type:'string',
