@@ -80,22 +80,54 @@ module.exports = {
     //todo débug pas de retour
 
     update: function (req, res) {
-        var new_id_truck = req.param("id_truck");
-        var old_id_truck = req.user.truck;
+        if (req.user.right === "Administrateur" || req.user.right === "Gestionnaire") {
+            var new_id_truck = req.param("id_truck");
+            var old_id_truck = req.user.truck;
 
-        console.log(req.user.truck);
-        User.update(req.body).exec(function (err, user) {
-            if(err) return res.serverError({error:"impossible d'update"});
+            if (new_id_truck && new_id_truck != old_id_truck) {
+                Truck.findOne({id: new_id_truck}).exec(function (err, truck) {
+                    if (err) return res.serverError
+                    if (!truck) return res.notFound({err: "no truck find with this new id truck"})
 
-            if(user){
-                if(new_id_truck == null || new_id_truck != old_id_truck){
-                    Truck.update(old_id_truck, {currentUser:null}).exec(function (err, truck) {});
-                    Truck.update(new_id_truck, {currentUser:user.id}).exec(function (err, truck) {})
-                }
-            }else return res.notFound()
+                    if (truck.currentUser)
+                        return res.badRequest({err: "ce truck a déjà un user"})
+                    else {
+                        User.update({id: req.param("id")}, req.body).exec(function (err, user) {
+                            if (err) return res.serverError({error: "impossible d'update"});
 
-            return res.ok({user:user})
-        })
+                            if (!user) return res.notFound({err: "no user found"})
+                            Truck.findOne({id:old_id_truck}).exec(function (err, truck) {
+                                if(err) return res.serverError
+                                truck.currentUser = null
+
+                                truck.save(function(err){
+                                    if(err) return res.serverError
+                                    Truck.publishUpdate(truck.id,({truck:truck}))
+                                })
+                            });
+                            Truck.findOne({id:new_id_truck}).exec(function (err, truck) {
+                                if(err) return res.serverError
+                                truck.currentUser = user[0].id
+
+                                truck.save(function(err){
+                                    if(err) return res.serverError
+                                    Truck.publishUpdate(truck.id,({truck:truck}))
+                                })
+                            })
+
+                            return res.ok({user: user})
+                        })
+                    }
+                })
+            } else {
+                User.update({id: req.param("id")}, req.body).exec(function (err, user) {
+                    if (err) return res.serverError({error: "impossible d'update"});
+
+                    if (!user) return res.notFound({err: "no user found"})
+                    return res.ok({user: user})
+                })
+            }
+        }
     }
 };
 
