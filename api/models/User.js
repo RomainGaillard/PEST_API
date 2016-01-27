@@ -20,16 +20,17 @@ module.exports = {
       columnName: 'id_truck',
     },
 
-    repairman: {
-      model:'repairman',
-      columnName:'id_repairman'
-    },
     firstname: {
       type: 'string',
       required: 'true',
       size: 24
     },
 
+    pannes:{
+      collection:'panne',
+      via:'idRepairman',
+      columnName: 'id_pannes'
+    },
     lastname: {
       type:'string',
       required: 'true',

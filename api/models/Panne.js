@@ -21,6 +21,11 @@ module.exports = {
     comment:{
       type:'string'
     },
+    idRepairman: {
+      collection: 'user',
+      via:'pannes',
+      columnName: 'id_repairmen'
+    },
     truck:{
       model:'Truck',
       columnName:'id_truck',
