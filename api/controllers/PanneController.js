@@ -48,8 +48,34 @@ module.exports = {
         var priority = req.param("priority");
         var state = req.param("state");
         var typePanne = req.param("type_panne");
+        var repairman = req.param("repairman");
+
         Panne.findOne({id:req.param("id_panne")}).exec(function(err,panne) {
             if (panne) {
+                if(repairman && !ToolsService.isEmpty(repairman)){
+                    if(!panne.idRepairman){
+                        User.findOne({id:repairman}).exec(function (err, user) {
+                            if(err) return res.notFound
+                            if(user){
+                                user.pannes.push(panne.id)
+                                panne.idRepairman = user.id
+
+                                user.save(function (err) {
+                                    if(err) return res.serverError
+
+
+                                })
+                            }
+                        })
+                    }/*else {
+                            User.findOne({id:repairman}).exec(function (err, user) {
+                            if(err) return res.notFound
+                            if(user){
+                                user.pannes.push(panne.id)
+                            }
+                        })
+                    }*/
+                }
                 if(comment && !ToolsService.isEmpty(comment)){
                     panne.comment = comment;
                 }
@@ -114,6 +140,16 @@ module.exports = {
         Panne.findOne({id:req.param("id")}).exec(function (err, panne) {
             if (err) return res.serverError
             if(panne){
+                User.findOne({id:panne.idRepairman}).populate("pannes").exec(function (err, user) {
+                    if(err) return res.serverError
+
+                    if(user){
+                        for(i=0; i < user.pannes.length; i++){
+                            if(user.pannes[i].id == panne.id)
+                                user.pannes.splice(i,1)
+                        }
+                    }
+                })
                 Truck.findOne({id:panne.truck}).populate("pannes").exec(function (err, truck) {
                     if(err) return res.serverError
                     if (truck){
@@ -125,7 +161,6 @@ module.exports = {
                         }
                         console.log(truck.pannes.length)
                         if(truck.pannes.length == 0){
-                            console.log("on ne doit pas passer ici ci ")
                             truck.state = "Ok"
                         }
                         truck.save(function (err) {
