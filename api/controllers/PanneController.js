@@ -114,14 +114,18 @@ module.exports = {
         Panne.findOne({id:req.param("id")}).exec(function (err, panne) {
             if (err) return res.serverError
             if(panne){
-                Truck.findOne({id:panne.truck}).exec(function (err, truck) {
+                Truck.findOne({id:panne.truck}).populate("pannes").exec(function (err, truck) {
                     if(err) return res.serverError
                     if (truck){
-                        var index = truck.pannes.indexOf(req.param("id"))
-                        if(index > -1)
-                            truck.pannes.splice(index,1)
+                        console.log(truck.pannes)
+                        for(i = 0; i <truck.pannes.length; i++){
+                            if(truck.pannes[i].id == req.param("id")){
+                                truck.pannes.splice(i,1)
+                            }
+                        }
+                        console.log(truck.pannes.length)
                         if(truck.pannes.length == 0){
-                            
+                            console.log("on ne doit pas passer ici ci ")
                             truck.state = "Ok"
                         }
                         truck.save(function (err) {

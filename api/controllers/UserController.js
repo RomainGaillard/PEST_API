@@ -117,6 +117,7 @@ module.exports = {
     //todo débug pas de retour
 
     update: function (req, res) {
+        console.log("test0")
         if (req.user.right === "Administrateur" || req.user.right === "Gestionnaire") {
             var body = req.body
             if(body.truck === "null")
@@ -124,75 +125,74 @@ module.exports = {
             if(body.company === "null")
                 body.company = null
 
-            var new_id_company = body.company
-            var old_id_company = req.user.company
+            //var new_id_company = body.company
+            //var old_id_company = req.user.company
 
             var new_id_truck = body.truck;
             var old_id_truck = req.user.truck;
 
-            var updateCompany = false
-            if(new_id_company && new_id_company != old_id_company){
-                Company.findOne({id:new_id_company}).exec(function (err, company) {
-                    if(err) return res.serverError({error:err})
-
-                    if(!company) return res.notFound({error:"cette company n'existe pas"})
-
-                    updateCompany = true
-                })
-            }
+            //var updateCompany = false
+            //if(new_id_company && new_id_company != old_id_company){
+            //    Company.findOne({id:new_id_company}).exec(function (err, company) {
+            //        if(err) return res.serverError({error:err})
+            //
+            //        if(!company) return res.notFound({error:"cette company n'existe pas"})
+            //        console.log("test1")
+            //        updateCompany = true
+            //    })
+            //}
             if (new_id_truck && new_id_truck != old_id_truck) {
                 Truck.findOne({id: new_id_truck}).exec(function (err, truck) {
                     if (err) return res.serverError
                     if (!truck) return res.notFound({err: "no truck find with this new id truck"})
-
                     if (truck.currentUser)
                         return res.badRequest({err: "ce truck a déjà un user"})
                     else {
-
                         User.update({id: req.param("id")}, body).exec(function (err, users) {
                             if (err) return res.serverError({error: "impossible d'update"});
 
                             if (!users) return res.notFound({err: "no user found"})
-
-                            if(updateCompany){
+/*                            if(updateCompany){
                                 Company.findOne({id:old_id_company}).exec(function (err, company) {
                                     if(err) return res.serverError({err:"erreur pour trouver l'ancienne company"})
+                                    if(company){
+                                        var index_old = company.users.indexOf(users[0].id)
+                                        company.users.splice(index_old,1)
+                                        company.save(function (err) {
+                                            if(err) return res.serverError
 
-                                    var index_old = company.users.indexOf(users[0].id)
-                                    company.users.splice(index_old,1)
-
-                                    company.save(function (err) {
-                                        if(err) return res.serverError
-
-                                    })
+                                        })
+                                    }
                                 })
 
                                 Company.findOne({id:new_id_company}).exec(function (err, company) {
                                     if(err) return res.serverError({err:"erreur pour trouver la nouvelle company"})
-
                                     company.users.push(users[0].id)
 
+                                    console.log("test5")
                                     company.save(function (err) {
                                         if(err) return res.serverError
 
                                     })
                                 })
 
-                            }
+                            }*/
                             Truck.findOne({id:old_id_truck}).exec(function (err, truck) {
                                 if(err) return res.serverError
-                                truck.currentUser = null
+                                if(truck){
+                                    truck.currentUser = null
 
-                                truck.save(function(err){
-                                    if(err) return res.serverError
-                                    Truck.publishUpdate(truck.id,({truck:truck}))
-                                })
+                                    truck.save(function(err){
+                                        if(err) return res.serverError
+                                        Truck.publishUpdate(truck.id,({truck:truck}))
+                                    })
+                                }
                             });
                             Truck.findOne({id:new_id_truck}).exec(function (err, truck) {
                                 if(err) return res.serverError
                                 truck.currentUser = users[0].id
-
                                 truck.save(function(err){
+                                    console.log(err)
                                     if(err) return res.serverError
                                     Truck.publishUpdate(truck.id,({truck:truck}))
                                 })
@@ -210,6 +210,9 @@ module.exports = {
                     return res.ok({user: user})
                 })
             }
+        }else {
+            console.log("test10")
+            return res.forbidden
         }
     }
 };
