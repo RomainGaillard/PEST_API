@@ -121,6 +121,7 @@ module.exports = {
                         if(index > -1)
                             truck.pannes.splice(index,1)
                         if(truck.pannes.length == 0){
+                            
                             truck.state = "Ok"
                         }
                         truck.save(function (err) {
