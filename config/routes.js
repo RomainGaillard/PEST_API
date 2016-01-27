@@ -68,7 +68,8 @@ module.exports.routes = {
    ***************************************************************************/
 
   'get /users':"UserController.getAllUsers",
-  'put /user/:id':"UserController.update",
+  'put /user/:id':"UserController.update"
+
 
 /**  GET /boat -> BoatController.find                                        *
   *  GET /boat/:id -> BoatController.findOne                                 *
