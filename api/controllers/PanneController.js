@@ -50,13 +50,13 @@ module.exports = {
         var typePanne = req.param("type_panne");
         Panne.findOne({id:req.param("id_panne")}).exec(function(err,panne) {
             if (panne) {
-                if(comment && !ToolsService.isEmpty){
+                if(comment && !ToolsService.isEmpty(comment)){
                     panne.comment = comment;
                 }
-                if(priority && !ToolsService.isEmpty){
+                if(priority && !ToolsService.isEmpty(priority)){
                     panne.priority = priority
                 }
-                if(state && !ToolsService.isEmpty){
+                if(state && !ToolsService.isEmpty(state)){
                     if(panne.state != state){
                         if(state == "Terminée"){
                             Truck.findOne({id:panne.truck}).populate("pannes").exec(function (err, truck) {
@@ -92,12 +92,13 @@ module.exports = {
                         panne.state = state
                     }
                 }
-                if(typePanne && !ToolsService.isEmpty){
+                if(typePanne && !ToolsService.isEmpty(typePanne)){
                     panne.typePanne = typePanne
                 }
 
                 panne.save(function (err) {
                     if (err) {
+                        console.log(err);
                         sails.log.debug("=> Edit PANNE: Erreur");
                         return res.status(400).json({err: "edit Panne: Erreur"})
                     }

@@ -52,7 +52,7 @@ module.exports.routes = {
    * Les routes du model TRUCK
    ***************************************************************************/
   'get /truck/:id_truck/pannes':"TruckController.getPannesByTruck",
-  'get /truck':"TruckController.trucks",
+  'get /trucks':"TruckController.trucks",
   'get /truck/:id':"TruckController.getTruckById",
   'put /truck/:id':"TruckController.update",
 
