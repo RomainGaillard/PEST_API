@@ -57,14 +57,10 @@ module.exports = {
                         User.findOne({id:repairman}).exec(function (err, user) {
                             if(err) return res.notFound
                             if(user){
-                                user.pannes.push(panne.id)
                                 panne.idRepairman = user.id
-
-                                user.save(function (err) {
-                                    if(err) return res.serverError
-
-
+                                panne.save(function (err) {
                                 })
+                                console.log(panne.idRepairman)
                             }
                         })
                     }/*else {
@@ -121,7 +117,6 @@ module.exports = {
                 if(typePanne && !ToolsService.isEmpty(typePanne)){
                     panne.typePanne = typePanne
                 }
-
                 panne.save(function (err) {
                     if (err) {
                         console.log(err);
