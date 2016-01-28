@@ -48,7 +48,7 @@ module.exports = {
                             user.save(function (err) {
                                 if(err) return res.serverError({error:err})
                             })
-                            return res.notFound({error:"le truck à cet id n'existe pas"})
+                            return res.notFound({error:"le truck ï¿½ cet id n'existe pas"})
                         }
                     })
                 }if(body.company){
@@ -76,7 +76,7 @@ module.exports = {
                     })
                 }
                 if(!is_in) res.json(200, {user: user});
-            }else return res.json(500, {error: "impossible de créer le camion"})
+            }else return res.json(500, {error: "impossible de crï¿½er le camion"})
         });
     },
 
@@ -84,7 +84,7 @@ module.exports = {
         if(req.user.right === "Administrateur"){
             User.find({}).populate("company").populate("truck").exec(function (err, users) {
                 if(err) return res.serverError
-                if(!users) return res.ok("pas d'utilisateur trouvé")
+                if(!users) return res.ok("pas d'utilisateur trouvï¿½")
 
                 if(req.isSocket){
                     for(i = 0; i< users.length; i++){
@@ -98,7 +98,7 @@ module.exports = {
         }else if(req.user.right === "Gestionnaire"){
             User.find({company: req.user.company}).populate("company").populate("truck").exec(function (err, users) {
                 if(err) return res.serverError
-                if(!users) return res.ok("pas d'utilisateur trouvé pour la company de ce gestionnaire")
+                if(!users) return res.ok("pas d'utilisateur trouvï¿½ pour la company de ce gestionnaire")
 
                 if(req.isSocket){
                     for(i = 0; i< users.length; i++){
@@ -114,11 +114,11 @@ module.exports = {
 
 
     // todo relation one to one si on change l'id du truck il faut que l'ancien truck et le nouveau le sache
-    //todo débug pas de retour
+    //todo dï¿½bug pas de retour
 
     update: function (req, res) {
         console.log("test0")
-        if (req.user.right === "Administrateur" || req.user.right === "Gestionnaire") {
+        if (true) {
             var body = req.body
             if(body.truck === "null")
                 body.truck = null
@@ -146,7 +146,7 @@ module.exports = {
                     if (err) return res.serverError
                     if (!truck) return res.notFound({err: "no truck find with this new id truck"})
                     if (truck.currentUser)
-                        return res.badRequest({err: "ce truck a déjà un user"})
+                        return res.badRequest({err: "ce truck a dï¿½jï¿½ un user"})
                     else {
                         User.update({id: req.param("id")}, body).exec(function (err, users) {
                             if (err) return res.serverError({error: "impossible d'update"});
